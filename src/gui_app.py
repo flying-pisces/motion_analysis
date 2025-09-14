@@ -43,6 +43,9 @@ class VideoPreviewWidget:
         self.start_time = 0
         self.current_time = 0
 
+        # Time update callback for synchronizing with results display
+        self.time_update_callback = None
+
         # Bind click event
         self.canvas.bind("<Button-1>", self.toggle_play_pause)
 
@@ -100,6 +103,14 @@ class VideoPreviewWidget:
             self.canvas.create_image(self.width//2, self.height//2,
                                    image=self.photo, anchor=tk.CENTER)
 
+            # Update current frame and time
+            self.current_frame = frame_number
+            self.current_time = frame_number / self.fps if self.fps > 0 else 0
+
+            # Notify parent about time update
+            if self.time_update_callback:
+                self.time_update_callback(self.current_time)
+
             self.current_frame = frame_number
             self.current_time = frame_number / self.fps if self.fps > 0 else 0
 
@@ -148,6 +159,10 @@ class VideoPreviewWidget:
         """Get total video duration."""
         return self.total_frames / self.fps if self.fps > 0 else 0
 
+    def set_time_update_callback(self, callback):
+        """Set callback function to notify parent about time updates."""
+        self.time_update_callback = callback
+
     def pack(self, **kwargs):
         """Pack the widget."""
         self.frame.pack(**kwargs)
@@ -180,6 +195,10 @@ class MotionAnalyzerGUI:
         self.video_preview = None
         self.time_var = tk.StringVar(value="0.0 s")
         self.timer_active = False
+
+        # Timestamped lines for progressive display
+        self.timestamped_lines = []
+        self.current_line_index = -1
 
         # Setup GUI
         self.setup_gui()
@@ -264,6 +283,9 @@ class MotionAnalyzerGUI:
         self.video_preview = VideoPreviewWidget(preview_frame, width=400, height=300)
         self.video_preview.pack(fill=tk.BOTH, expand=True)
 
+        # Set up time update callback for synchronized display
+        self.video_preview.set_time_update_callback(self.on_video_time_update)
+
         # Instructions
         instructions = ttk.Label(preview_frame,
                                 text="Click on video to play/pause • Auto-loops by default",
@@ -339,11 +361,11 @@ class MotionAnalyzerGUI:
 
         # Instructions
         ttk.Label(assembly_frame,
-                 text="After analysis, click 'Assemble Training Video' to create a training video",
+                 text="After analysis, click below to generate and preview the training video",
                  font=('Arial', 10), foreground='gray').pack(anchor=tk.W, pady=(0, 10))
 
         # Assembly button
-        self.assemble_btn = ttk.Button(assembly_frame, text="Assemble Training Video",
+        self.assemble_btn = ttk.Button(assembly_frame, text="🎬 Generate & Preview Training Video",
                                       command=self.start_assembly,
                                       style='Accent.TButton',
                                       state='disabled')
@@ -458,8 +480,7 @@ videos by combining raw footage with generated code overlays."""
         """Update the timer display."""
         if self.video_preview and self.video_preview.cap:
             current_time = self.video_preview.get_current_time()
-            total_time = self.video_preview.get_total_duration()
-            self.time_var.set(f"{current_time:.1f}s / {total_time:.1f}s")
+            self.time_var.set(f"{current_time:.1f}s")
         else:
             self.time_var.set("0.0s")
 
@@ -515,24 +536,27 @@ videos by combining raw footage with generated code overlays."""
             action_code = self.analysis_results['action_code']
             metadata = self.analysis_results['metadata']
 
-            # Generate timestamped action code
+            # Generate timestamped action code and store for progressive display
             timestamped_code = self.generate_timestamped_code(action_code, metadata)
+            self.parse_timestamped_lines(timestamped_code)
 
-            result_text = f"Action Code with Timestamps:\n{'='*60}\n\n{timestamped_code}\n\n"
-            result_text += f"Analysis Summary:\n{'='*40}\n"
-            result_text += f"Motion Events Detected: {metadata['motion_events']}\n"
-            result_text += f"Analysis Time: {metadata['analysis_time']}\n"
-            result_text += f"Output File: {metadata['output_file']}\n"
-
+            # Initialize progressive display
             self.results_text.delete(1.0, tk.END)
-            self.results_text.insert(1.0, result_text)
+            header_text = f"Action Code with Timestamps:\n{'='*60}\n\n"
+            summary_text = f"\n\nAnalysis Summary:\n{'='*40}\n"
+            summary_text += f"Motion Events Detected: {metadata['motion_events']}\n"
+            summary_text += f"Analysis Time: {metadata['analysis_time']}\n"
+            summary_text += f"Output File: {metadata['output_file']}\n"
+
+            self.results_text.insert(1.0, header_text + summary_text)
+            self.current_line_index = -1
 
             # Load and display video information
             self.load_video_info_after_analysis(self.current_video_path.get())
 
             # Enable assembly
             self.assemble_btn.config(state='normal')
-            self.assembly_status.config(text="Ready to assemble training video")
+            self.assembly_status.config(text="Ready to generate training video preview")
 
     def generate_timestamped_code(self, action_code, metadata):
         """Generate action code with timestamps."""
@@ -553,6 +577,59 @@ videos by combining raw footage with generated code overlays."""
                 timestamped_lines.append(line)
 
         return '\n'.join(timestamped_lines)
+
+    def parse_timestamped_lines(self, timestamped_code):
+        """Parse timestamped code into list of (timestamp, text) tuples."""
+        self.timestamped_lines = []
+
+        for line in timestamped_code.split('\n'):
+            if line.strip() and line.startswith('[') and ']' in line:
+                try:
+                    # Extract timestamp: [12.5s] action
+                    timestamp_part = line.split(']')[0][1:]  # Remove [ and ]
+                    timestamp = float(timestamp_part.replace('s', ''))
+                    action_part = line.split(']', 1)[1].strip()
+                    self.timestamped_lines.append((timestamp, action_part))
+                except (ValueError, IndexError):
+                    # If parsing fails, skip this line
+                    pass
+
+    def on_video_time_update(self, current_time):
+        """Handle video time updates for synchronized text display."""
+        # Update blue time clock (without denominator)
+        self.time_var.set(f"{current_time:.1f}s")
+
+        # Update progressive text display
+        if self.timestamped_lines:
+            # Find which lines should be visible at current time
+            visible_lines = []
+            for timestamp, text in self.timestamped_lines:
+                if current_time >= timestamp:
+                    visible_lines.append(f"[{timestamp:05.1f}s] {text}")
+
+            # Update display if there are changes
+            if len(visible_lines) != self.current_line_index + 1:
+                self.current_line_index = len(visible_lines) - 1
+                self.update_progressive_display(visible_lines)
+
+    def update_progressive_display(self, visible_lines):
+        """Update the results text with only visible lines."""
+        header_text = f"Action Code with Timestamps:\n{'='*60}\n\n"
+
+        if self.analysis_results:
+            metadata = self.analysis_results['metadata']
+            summary_text = f"\n\nAnalysis Summary:\n{'='*40}\n"
+            summary_text += f"Motion Events Detected: {metadata['motion_events']}\n"
+            summary_text += f"Analysis Time: {metadata['analysis_time']}\n"
+            summary_text += f"Output File: {metadata['output_file']}\n"
+        else:
+            summary_text = ""
+
+        # Build the display content with only visible lines
+        content = header_text + '\n'.join(visible_lines) + summary_text
+
+        self.results_text.delete(1.0, tk.END)
+        self.results_text.insert(1.0, content)
 
     def load_video_info_after_analysis(self, video_path):
         """Load and display video information after analysis."""
@@ -632,15 +709,13 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         # Use the generated code file from analysis
         code_file = self.analysis_results['metadata']['output_file']
 
-        # Choose output path
-        output_path = filedialog.asksaveasfilename(
-            title="Save Assembled Training Video",
-            defaultextension=".mp4",
-            filetypes=[("MP4 files", "*.mp4"), ("All files", "*.*")]
-        )
+        # Generate temporary output path for preview
+        import tempfile
+        temp_dir = os.path.join(os.path.dirname(raw_video), "temp_assembly")
+        os.makedirs(temp_dir, exist_ok=True)
 
-        if not output_path:
-            return
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        temp_output_path = os.path.join(temp_dir, f"training_video_preview_{timestamp}.mp4")
 
         self.assemble_btn.config(state='disabled')
         self.assembly_status.config(text="Assembling training video...")
@@ -648,7 +723,7 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         # Start assembly in separate thread
         assembly_thread = threading.Thread(
             target=self.assemble_video_thread,
-            args=(raw_video, code_file, output_path)
+            args=(raw_video, code_file, temp_output_path)
         )
         assembly_thread.daemon = True
         assembly_thread.start()
@@ -663,22 +738,17 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
             self.root.after(0, lambda: self.assembly_complete(metadata, output_path))
 
         except Exception as e:
-            self.root.after(0, lambda: self.assembly_error(str(e)))
+            error_msg = str(e)
+            self.root.after(0, lambda msg=error_msg: self.assembly_error(msg))
 
     def assembly_complete(self, metadata: Dict, output_path: str):
         """Handle completion of video assembly."""
         self.assemble_btn.config(state='normal')
-        self.assembly_status.config(text="Assembly complete!")
+        self.assembly_status.config(text="Assembly complete - Opening player...")
 
         size_mb = metadata.get('output_file_size', 0) / (1024 * 1024)
 
-        # Show brief success message
-        messagebox.showinfo("Success",
-                           f"Training video assembled successfully!\n"
-                           f"Size: {size_mb:.1f} MB\n"
-                           f"Opening training video player...")
-
-        # Open the training video player with the assembled video
+        # Open the training video player with the assembled video immediately
         try:
             # Get the timestamped action code from the results text
             action_code_with_timestamps = self.results_text.get(1.0, tk.END)
@@ -686,8 +756,12 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
             # Create and open the training video player
             player = create_training_video_player(self.root, output_path, action_code_with_timestamps)
 
+            # Update status to indicate player is open
+            self.assembly_status.config(text=f"Training video ready ({size_mb:.1f} MB)")
+
         except Exception as e:
             messagebox.showerror("Error", f"Failed to open training video player: {str(e)}")
+            self.assembly_status.config(text="Assembly complete - Player failed to open")
 
     def assembly_error(self, error_msg: str):
         """Handle assembly error."""

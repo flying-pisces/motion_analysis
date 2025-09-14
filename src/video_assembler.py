@@ -118,6 +118,12 @@ class VideoAssembler:
         assembled_width = original_width
         assembled_height = int(original_width)  # Make it square like the original training video
 
+        # Ensure dimensions are divisible by 2 for h264 encoding
+        if assembled_width % 2 != 0:
+            assembled_width += 1
+        if assembled_height % 2 != 0:
+            assembled_height += 1
+
         return assembled_width, assembled_height
 
     def _create_assembled_video(self, raw_video_path: str, action_code: str,
@@ -126,8 +132,17 @@ class VideoAssembler:
         assembled_width, assembled_height = dimensions
 
         # Calculate split - raw video on top, code on bottom
+        # Ensure heights are divisible by 2 for h264 encoding
         code_section_height = int(assembled_height * self.config['code_overlay_height_ratio'])
+        # Make sure it's even
+        if code_section_height % 2 != 0:
+            code_section_height += 1
+
         video_section_height = assembled_height - code_section_height
+        # Make sure video height is also even
+        if video_section_height % 2 != 0:
+            video_section_height -= 1
+            code_section_height = assembled_height - video_section_height
 
         # Create temporary video with resized raw footage
         temp_resized_path = output_path.replace('.mp4', '_temp_resized.mp4')
@@ -159,6 +174,9 @@ class VideoAssembler:
         cmd = [
             'ffmpeg', '-i', input_path,
             '-vf', f'scale={width}:{height}',
+            '-c:v', 'libx264',
+            '-preset', 'medium',
+            '-pix_fmt', 'yuv420p',
             '-c:a', 'copy',
             '-y', output_path
         ]
@@ -244,8 +262,11 @@ class VideoAssembler:
             '-map', '[out]',
             '-map', '0:a',  # Copy audio from original video
             '-c:v', 'libx264',
+            '-preset', 'medium',  # Add preset for better compatibility
+            '-pix_fmt', 'yuv420p',  # Ensure compatible pixel format
             '-crf', str(self.config['output_quality']),
             '-r', str(self.config['output_fps']),
+            '-movflags', '+faststart',  # Better web compatibility
             '-shortest',  # End when shortest input ends (video)
             '-y', output_path
         ]
