@@ -16,6 +16,7 @@ import time
 
 from video_analyzer import MotionAnalyzer, VideoProcessor
 from video_assembler import VideoAssembler, VideoSplitter
+from training_video_player import create_training_video_player
 
 
 class VideoPreviewWidget:
@@ -387,6 +388,24 @@ class MotionAnalyzerGUI:
         ttk.Button(splitter_frame, text="Split Video",
                   command=self.split_training_video).pack(pady=5)
 
+        # Training video player section
+        player_frame = ttk.LabelFrame(utils_frame, text="Training Video Player", padding=10)
+        player_frame.pack(fill=tk.X, padx=10, pady=5)
+
+        ttk.Label(player_frame, text="Open existing training video with player:").pack(anchor=tk.W)
+
+        player_input_frame = ttk.Frame(player_frame)
+        player_input_frame.pack(fill=tk.X, pady=5)
+
+        self.player_video_entry = ttk.Entry(player_input_frame, width=50, state='readonly')
+        self.player_video_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+        ttk.Button(player_input_frame, text="Browse",
+                  command=self.browse_player_video).pack(side=tk.RIGHT, padx=(5, 0))
+
+        ttk.Button(player_frame, text="Open in Player",
+                  command=self.open_training_video_player).pack(pady=5)
+
         # Configuration section
         config_frame = ttk.LabelFrame(utils_frame, text="Configuration", padding=10)
         config_frame.pack(fill=tk.X, padx=10, pady=5)
@@ -652,12 +671,23 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
         self.assembly_status.config(text="Assembly complete!")
 
         size_mb = metadata.get('output_file_size', 0) / (1024 * 1024)
-        message = f"Training video assembled successfully!\n\n"
-        message += f"Output: {output_path}\n"
-        message += f"Size: {size_mb:.1f} MB\n"
-        message += f"Duration: {metadata['duration']:.1f} seconds"
 
-        messagebox.showinfo("Success", message)
+        # Show brief success message
+        messagebox.showinfo("Success",
+                           f"Training video assembled successfully!\n"
+                           f"Size: {size_mb:.1f} MB\n"
+                           f"Opening training video player...")
+
+        # Open the training video player with the assembled video
+        try:
+            # Get the timestamped action code from the results text
+            action_code_with_timestamps = self.results_text.get(1.0, tk.END)
+
+            # Create and open the training video player
+            player = create_training_video_player(self.root, output_path, action_code_with_timestamps)
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open training video player: {str(e)}")
 
     def assembly_error(self, error_msg: str):
         """Handle assembly error."""
@@ -701,6 +731,61 @@ Analysis Completed: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"""
 
         except Exception as e:
             messagebox.showerror("Error", f"Failed to split video: {str(e)}")
+
+    def browse_player_video(self):
+        """Browse for training video to open in player."""
+        file_path = filedialog.askopenfilename(
+            title="Select Training Video",
+            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv *.wmv *.flv"), ("All files", "*.*")]
+        )
+
+        if file_path:
+            self.player_video_entry.delete(0, tk.END)
+            self.player_video_entry.insert(0, file_path)
+
+    def open_training_video_player(self):
+        """Open training video in the dedicated player."""
+        video_path = self.player_video_entry.get()
+
+        if not video_path:
+            messagebox.showwarning("Warning", "Please select a training video first.")
+            return
+
+        if not os.path.exists(video_path):
+            messagebox.showerror("Error", "Video file not found.")
+            return
+
+        # Generate default action code for unknown training videos
+        # In practice, you might want to load this from a companion text file
+        default_code = """[00.0s] LOOP forever:
+[03.0s]     WHILE input_box has adapters:
+[06.0s]         MOVE adapters from input_box TO press_bed
+[09.0s]         IF stamping_press already contains a stamped adapter:
+[12.0s]             RIGHT_HAND grab stamped adapter
+[15.0s]             IF right_hand holds 2 stamped adapters:
+[18.0s]                 PLACE 2 stamped adapters INTO output_box
+[21.0s]         WHILE press_bed has adapters:
+[24.0s]             LEFT_HAND load 1 adapter INTO stamping_press
+[27.0s]             RIGHT_HAND press press_button
+[30.0s]             LEFT_HAND grab next unstamped adapter
+[33.0s]             WAIT until stamping_press completes"""
+
+        try:
+            # Look for a companion text file first
+            base_path = os.path.splitext(video_path)[0]
+            text_file_path = base_path + "_code.txt"
+
+            if os.path.exists(text_file_path):
+                with open(text_file_path, 'r') as f:
+                    action_code = f.read()
+            else:
+                action_code = default_code
+
+            # Create and open the training video player
+            player = create_training_video_player(self.root, video_path, action_code)
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to open training video player: {str(e)}")
 
     def edit_analysis_config(self):
         """Open analysis configuration editor."""
