@@ -1,0 +1,17 @@
+{
+  "code_overlay_height_ratio": 0.52,
+  "code_background_color": [40, 40, 40],
+  "code_text_color": [255, 255, 255],
+  "code_font_size": 18,
+  "code_padding": 20,
+  "line_height_multiplier": 1.4,
+  "output_fps": 30,
+  "output_quality": 23,
+  "font_paths": [
+    "/System/Library/Fonts/Menlo.ttc",
+    "/System/Library/Fonts/Monaco.ttc",
+    "C:\\Windows\\Fonts\\consola.ttf",
+    "/usr/share/fonts/truetype/liberation/LiberationMono-Regular.ttf",
+    "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+  ]
+}

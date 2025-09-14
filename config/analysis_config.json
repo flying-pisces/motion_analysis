@@ -1,0 +1,14 @@
+{
+  "motion_threshold": 25,
+  "contour_min_area": 1000,
+  "frame_skip": 3,
+  "roi_top_ratio": 0.48,
+  "time_window_size": 2.0,
+  "classification_thresholds": {
+    "large_motion_area": 50000,
+    "medium_motion_area": 20000,
+    "long_duration": 3.0,
+    "high_event_count": 5,
+    "left_side_boundary": 300
+  }
+}
