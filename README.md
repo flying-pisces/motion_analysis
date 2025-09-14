@@ -90,8 +90,11 @@ motion_analyzer/
 │   ├── analysis_config.json # Analysis parameters
 │   └── assembly_config.json # Assembly parameters
 ├── data/
-│   ├── input/              # Input videos and files
-│   ├── output/             # Generated outputs
+│   ├── input/              # Input videos and example files
+│   │   ├── twitter_video.mp4        # Example training video (ground truth)
+│   │   ├── human_operation_only.mp4 # Example factory floor video
+│   │   └── code_from_video.txt      # Example generated action code
+│   ├── output/             # Generated analysis and assembly results
 │   └── models/             # Future ML model storage
 ├── tests/                  # Unit tests (future)
 ├── docs/                   # Additional documentation
@@ -99,6 +102,25 @@ motion_analyzer/
 ├── requirements.txt        # Python dependencies
 └── README.md              # This file
 ```
+
+### Video File Storage
+
+- **Input Videos**: Store your factory floor videos in `data/input/`
+- **Example Files**: The repository includes example videos and generated code:
+  - `twitter_video.mp4`: Complete training video with human operation + code overlay
+  - `human_operation_only.mp4`: Factory floor footage (human operations only)
+  - `code_from_video.txt`: Generated action code from the analysis
+- **Output Files**: Analysis results and assembled videos are saved in `data/output/`
+
+### Supported Video Formats
+
+The application supports the following video formats:
+- **MP4** (recommended) - Best compatibility and quality
+- **AVI** - Common format, good compatibility
+- **MOV** - Apple QuickTime format
+- **MKV** - Matroska format, supports multiple streams
+- **WMV** - Windows Media Video
+- **FLV** - Flash Video format
 
 ## Configuration
 
@@ -148,6 +170,23 @@ The assembled training video has two sections:
 - **Bottom Section**: Generated action code with syntax highlighting
 
 This format matches the original Twitter video structure, making it suitable for training purposes.
+
+## Quick Start with Example Files
+
+The repository includes example files to test the application:
+
+1. **Test Analysis**:
+   - Use `data/input/human_operation_only.mp4` as input
+   - This will generate action code similar to `data/input/code_from_video.txt`
+
+2. **Test Assembly**:
+   - Raw video: `data/input/human_operation_only.mp4`
+   - Action code: `data/input/code_from_video.txt`
+   - This will create a training video similar to `data/input/twitter_video.mp4`
+
+3. **Test Video Splitting**:
+   - Use `data/input/twitter_video.mp4` to extract components
+   - This demonstrates how to split existing training videos
 
 ## Advanced Features
 
@@ -201,10 +240,11 @@ Use the utilities tab to split existing training videos back into their componen
 ### Common Issues
 
 1. **FFmpeg not found**: Make sure FFmpeg is installed and in your PATH
-2. **Video won't load**: Check that the video format is supported (MP4, AVI, MOV, MKV)
+2. **Video won't load**: Check that the video format is supported (MP4, AVI, MOV, MKV, WMV, FLV)
 3. **Analysis takes too long**: Increase `frame_skip` in analysis configuration
 4. **Poor motion detection**: Adjust `motion_threshold` and `contour_min_area`
 5. **Assembly fails**: Check that both input files exist and are readable
+6. **Unsupported codec**: If a video file won't load, try converting it to MP4 format using FFmpeg
 
 ### Performance Tips
 

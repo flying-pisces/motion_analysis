@@ -69,6 +69,12 @@ class MotionAnalyzerGUI:
 
         ttk.Label(input_frame, text="Select factory floor video:").pack(anchor=tk.W)
 
+        # Supported formats info
+        formats_label = ttk.Label(input_frame,
+                                 text="Supported formats: MP4, AVI, MOV, MKV, WMV, FLV",
+                                 font=('Arial', 9), foreground='gray')
+        formats_label.pack(anchor=tk.W, pady=(0, 5))
+
         video_frame = ttk.Frame(input_frame)
         video_frame.pack(fill=tk.X, pady=5)
 
@@ -133,6 +139,12 @@ class MotionAnalyzerGUI:
 
         # Raw video input
         ttk.Label(inputs_frame, text="Raw video file:").pack(anchor=tk.W)
+
+        # Supported formats info for assembly
+        formats_label2 = ttk.Label(inputs_frame,
+                                  text="Supported formats: MP4, AVI, MOV, MKV, WMV, FLV",
+                                  font=('Arial', 9), foreground='gray')
+        formats_label2.pack(anchor=tk.W, pady=(0, 2))
         raw_video_frame = ttk.Frame(inputs_frame)
         raw_video_frame.pack(fill=tk.X, pady=2)
 
@@ -195,6 +207,12 @@ class MotionAnalyzerGUI:
 
         ttk.Label(splitter_frame, text="Extract components from training video:").pack(anchor=tk.W)
 
+        # Supported formats info for utilities
+        formats_label3 = ttk.Label(splitter_frame,
+                                  text="Supported formats: MP4, AVI, MOV, MKV, WMV, FLV",
+                                  font=('Arial', 9), foreground='gray')
+        formats_label3.pack(anchor=tk.W, pady=(0, 5))
+
         split_input_frame = ttk.Frame(splitter_frame)
         split_input_frame.pack(fill=tk.X, pady=5)
 
@@ -244,7 +262,7 @@ For support and documentation, please refer to the README file."""
         """Browse and select a video file for analysis."""
         file_path = filedialog.askopenfilename(
             title="Select Factory Floor Video",
-            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv"), ("All files", "*.*")]
+            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv *.wmv *.flv"), ("All files", "*.*")]
         )
 
         if file_path:
@@ -383,7 +401,7 @@ Total Frames: {info['frame_count']:,}
         """Browse for raw video file."""
         file_path = filedialog.askopenfilename(
             title="Select Raw Video",
-            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv"), ("All files", "*.*")]
+            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv *.wmv *.flv"), ("All files", "*.*")]
         )
 
         if file_path:
@@ -493,7 +511,7 @@ Total Frames: {info['frame_count']:,}
         """Browse for training video to split."""
         file_path = filedialog.askopenfilename(
             title="Select Training Video to Split",
-            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv"), ("All files", "*.*")]
+            filetypes=[("Video files", "*.mp4 *.avi *.mov *.mkv *.wmv *.flv"), ("All files", "*.*")]
         )
 
         if file_path:
