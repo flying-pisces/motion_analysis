@@ -1,305 +1,279 @@
 # Motion Analysis and Video Assembly Tool
 
-A comprehensive tool for analyzing factory floor videos to extract motion patterns, generate action code descriptions, and create training videos with code overlays.
+A comprehensive solution for analyzing factory floor videos and generating training materials with precise motion tracking and action code generation.
 
-## Features
+## 🌐 Live Demos
 
-- **Video Analysis**: Computer vision-based motion detection and pattern recognition
-- **Action Code Generation**: Automatic generation of structured pseudocode from motion patterns
-- **Video Assembly**: Combine raw footage with generated code to create training materials
-- **GUI Interface**: User-friendly Tkinter-based interface for all operations
-- **Utilities**: Video splitting, configuration management, and batch processing
-- **Extensible**: Configurable parameters and modular architecture
+| Platform | URL | Features |
+|----------|-----|----------|
+| **GitLab Pages** | https://chuck.yin.gitlab.io/motion_analysis_dfm/ | CI/CD deployment, staging environment |
+| **GitHub Pages** | https://flying-pisces.github.io/motion_analysis/ | Mirror deployment |
 
-## Installation
+## 🏗 Project Architecture
 
-### Prerequisites
+This repository serves **multiple deployment platforms** from a single codebase:
 
-- Python 3.8 or higher
-- FFmpeg (for video processing)
+### 📱 Platform Deployments
 
-### Install Dependencies
+- **Web Application**: Browser-based interface with video preview and modal training player
+- **Desktop Application**: Full-featured Python/Tkinter app with advanced processing
+- **Multi-Platform CI/CD**: Automated deployment to both GitLab and GitHub Pages
 
+### 🔄 Git Remotes
+
+```bash
+# GitLab (Primary development)
+gitlab    git@gitlab.com:chuck.yin/motion_analysis_dfm.git
+
+# GitHub (Public mirror)
+origin    git@github.com:flying-pisces/motion_analysis.git
+```
+
+## 🚀 Quick Start
+
+### 🌐 Web Application (Recommended)
+Visit either deployment:
+- **GitLab**: https://chuck.yin.gitlab.io/motion_analysis_dfm/
+- **GitHub**: https://flying-pisces.github.io/motion_analysis/
+
+### 💻 Desktop Application
 ```bash
 cd motion_analyzer
 pip install -r requirements.txt
-```
-
-### Install FFmpeg
-
-**macOS (using Homebrew):**
-```bash
-brew install ffmpeg
-```
-
-**Windows:**
-Download from https://ffmpeg.org/download.html
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt update
-sudo apt install ffmpeg
-```
-
-## Usage
-
-### GUI Application
-
-Launch the main GUI application:
-
-```bash
 python main.py
 ```
 
-The application provides three main tabs:
+## 📋 Features
 
-1. **Video Analysis**: Upload factory floor videos and analyze motion patterns
-2. **Video Assembly**: Combine raw videos with action code to create training materials
-3. **Utilities**: Additional tools for video processing and configuration
+### 🎥 Video Processing
+- **Upload Support**: MP4, AVI, MOV, MKV, WMV, FLV
+- **Interactive Preview**: Click to play/pause, drag progress bar to seek
+- **Real-time Clock**: Sub-second accuracy timing display
+- **Auto-loop Playback**: Continuous video review
 
-### Command Line Usage
+### 🔍 Motion Analysis
+- **Pattern Recognition**: Automated motion event detection
+- **Timestamped Output**: Precise action code with timing
+- **Progressive Display**: Synchronized text highlighting during playback
+- **Export Options**: Save analysis results to file
 
-You can also use the modules programmatically:
+### 🎬 Training Video Assembly
+- **Modal Player**: Immersive full-screen preview experience
+- **Side-by-side Layout**: Video + synchronized action code
+- **Real-time Highlighting**: Active line tracking during playback
+- **Professional Controls**: Play/pause, seek, restart functionality
 
-```python
-from src.video_analyzer import MotionAnalyzer
-from src.video_assembler import VideoAssembler
+### 🛠 Utilities
+- **Video Splitting**: Extract components from training videos
+- **Configuration**: Customizable analysis and assembly settings
+- **Multi-format Support**: Comprehensive video format compatibility
 
-# Analyze a video
-analyzer = MotionAnalyzer()
-action_code, metadata = analyzer.analyze_video('input_video.mp4', 'output_dir')
-
-# Assemble training video
-assembler = VideoAssembler()
-result = assembler.assemble_training_video(
-    'raw_video.mp4',
-    'action_code.txt',
-    'training_video.mp4'
-)
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
-motion_analyzer/
-├── src/
-│   ├── gui_app.py           # Main GUI application
-│   ├── video_analyzer.py    # Motion analysis module
-│   └── video_assembler.py   # Video assembly module
-├── config/
-│   ├── analysis_config.json # Analysis parameters
-│   └── assembly_config.json # Assembly parameters
-├── data/
-│   ├── input/              # Input videos and example files
-│   │   ├── twitter_video.mp4        # Example training video (ground truth)
-│   │   ├── human_operation_only.mp4 # Example factory floor video
-│   │   └── code_from_video.txt      # Example generated action code
-│   ├── output/             # Generated analysis and assembly results
-│   └── models/             # Future ML model storage
-├── tests/                  # Unit tests (future)
-├── docs/                   # Additional documentation
-├── main.py                 # Application entry point
-├── requirements.txt        # Python dependencies
-└── README.md              # This file
+motion_analysis_dfm/
+├── deployment/
+│   ├── github-pages/       # GitHub Pages deployment
+│   │   ├── index.html
+│   │   ├── styles.css
+│   │   └── script.js
+│   └── gitlab-pages/       # GitLab Pages deployment
+│       ├── index.html
+│       ├── styles.css
+│       ├── script.js
+│       └── README_GITLAB.md
+├── motion_analyzer/        # Desktop application
+│   ├── main.py            # Application entry point
+│   ├── src/               # Source code modules
+│   │   ├── gui_app.py     # Enhanced GUI with progress bar
+│   │   ├── video_analyzer.py    # Motion analysis engine
+│   │   ├── video_assembler.py   # Video assembly tools
+│   │   └── training_video_player.py  # Training video player
+│   ├── config/            # Configuration files
+│   │   ├── analysis_config.json
+│   │   └── assembly_config.json
+│   ├── data/              # Example videos and data
+│   │   ├── input/         # Sample videos
+│   │   └── output/        # Generated results
+│   ├── requirements.txt   # Python dependencies
+│   └── test_app.py       # Test utilities
+├── docs/                  # Documentation
+│   └── DEPLOYMENT.md      # Deployment guide
+├── .gitlab-ci.yml        # GitLab CI/CD configuration
+├── index.html            # Root web files (deployed copies)
+├── styles.css
+├── script.js
+└── README.md             # This file
 ```
 
-### Video File Storage
+## 🛠 Development Workflow
 
-- **Input Videos**: Store your factory floor videos in `data/input/`
-- **Example Files**: The repository includes example videos and generated code:
-  - `twitter_video.mp4`: Complete training video with human operation + code overlay
-  - `human_operation_only.mp4`: Factory floor footage (human operations only)
-  - `code_from_video.txt`: Generated action code from the analysis
-- **Output Files**: Analysis results and assembled videos are saved in `data/output/`
+### Branch Strategy
+- **`main`**: Production releases (auto-deploys to both platforms)
+- **`develop`**: Development branch (deploys to GitLab staging)
+- **`gh-pages`**: GitHub Pages deployment branch
+- **`feature/*`**: Feature development branches
 
-### Supported Video Formats
-
-The application supports the following video formats:
-- **MP4** (recommended) - Best compatibility and quality
-- **AVI** - Common format, good compatibility
-- **MOV** - Apple QuickTime format
-- **MKV** - Matroska format, supports multiple streams
-- **WMV** - Windows Media Video
-- **FLV** - Flash Video format
-
-## Configuration
-
-### Analysis Configuration
-
-Edit `config/analysis_config.json` to customize motion detection:
-
-- `motion_threshold`: Sensitivity for motion detection (lower = more sensitive)
-- `contour_min_area`: Minimum area for motion regions
-- `frame_skip`: Skip frames for performance (higher = faster but less accurate)
-- `roi_top_ratio`: Focus area ratio (0.48 = top 48% of video)
-
-### Assembly Configuration
-
-Edit `config/assembly_config.json` to customize video assembly:
-
-- `code_overlay_height_ratio`: Portion of video for code overlay
-- `code_background_color`: Background color for code section [R, G, B]
-- `code_text_color`: Text color for code [R, G, B]
-- `code_font_size`: Font size for code text
-- `output_fps`: Frame rate of assembled video
-- `output_quality`: Video quality (18-28, lower is better)
-
-## Workflow
-
-### 1. Video Analysis
-
-1. **Upload Video**: Select a factory floor video showing human operations
-2. **Configure Analysis**: Adjust motion detection parameters if needed
-3. **Analyze**: The tool will detect motion patterns and generate action code
-4. **Review Results**: Examine the generated pseudocode and motion events
-5. **Save**: Export the action code to a text file
-
-### 2. Video Assembly
-
-1. **Select Raw Video**: Choose the original factory floor video
-2. **Select Action Code**: Use the generated code file from analysis
-3. **Preview**: Review the code that will be overlaid
-4. **Assemble**: Create the training video with code overlay
-5. **Save**: Export the assembled training video
-
-### 3. Training Video Format
-
-The assembled training video has two sections:
-
-- **Top Section**: Raw factory floor footage (human operations)
-- **Bottom Section**: Generated action code with syntax highlighting
-
-This format matches the original Twitter video structure, making it suitable for training purposes.
-
-## Quick Start with Example Files
-
-The repository includes example files to test the application:
-
-1. **Test Analysis**:
-   - Use `data/input/human_operation_only.mp4` as input
-   - This will generate action code similar to `data/input/code_from_video.txt`
-
-2. **Test Assembly**:
-   - Raw video: `data/input/human_operation_only.mp4`
-   - Action code: `data/input/code_from_video.txt`
-   - This will create a training video similar to `data/input/twitter_video.mp4`
-
-3. **Test Video Splitting**:
-   - Use `data/input/twitter_video.mp4` to extract components
-   - This demonstrates how to split existing training videos
-
-## Advanced Features
-
-### Batch Processing
-
-For processing multiple videos, you can create scripts using the core modules:
-
-```python
-import os
-from src.video_analyzer import MotionAnalyzer
-from src.video_assembler import VideoAssembler
-
-analyzer = MotionAnalyzer()
-assembler = VideoAssembler()
-
-# Process all videos in a directory
-input_dir = "data/input"
-for video_file in os.listdir(input_dir):
-    if video_file.endswith('.mp4'):
-        video_path = os.path.join(input_dir, video_file)
-
-        # Analyze
-        action_code, metadata = analyzer.analyze_video(video_path, "data/output")
-
-        # Assemble
-        output_path = f"data/output/training_{video_file}"
-        assembler.assemble_training_video(
-            video_path, metadata['output_file'], output_path
-        )
-```
-
-### Custom Motion Classification
-
-The motion classification can be customized by modifying the `_classify_motion` method in `video_analyzer.py`. The current implementation uses heuristic rules based on:
-
-- Motion area size
-- Duration
-- Position in frame
-- Event frequency
-
-### Video Splitting
-
-Use the utilities tab to split existing training videos back into their components:
-
-1. Select a training video
-2. Choose output directory
-3. Extract raw video and code image
-
-## Troubleshooting
-
-### Common Issues
-
-1. **FFmpeg not found**: Make sure FFmpeg is installed and in your PATH
-2. **Video won't load**: Check that the video format is supported (MP4, AVI, MOV, MKV, WMV, FLV)
-3. **Analysis takes too long**: Increase `frame_skip` in analysis configuration
-4. **Poor motion detection**: Adjust `motion_threshold` and `contour_min_area`
-5. **Assembly fails**: Check that both input files exist and are readable
-6. **Unsupported codec**: If a video file won't load, try converting it to MP4 format using FFmpeg
-
-### Performance Tips
-
-- Use `frame_skip` parameter to speed up analysis
-- Crop videos to focus on relevant areas before processing
-- Use lower resolution videos for faster processing
-- Adjust `roi_top_ratio` to focus on specific areas
-
-## Development
-
-### Adding New Features
-
-The modular design makes it easy to extend functionality:
-
-1. **New Analysis Methods**: Add to `video_analyzer.py`
-2. **New Assembly Options**: Add to `video_assembler.py`
-3. **GUI Enhancements**: Modify `gui_app.py`
-4. **Configuration Options**: Update config JSON files
-
-### Testing
-
-Run the application with example data:
-
+### Local Development
 ```bash
-# The included example files can be used for testing
+# Clone repository
+git clone git@gitlab.com:chuck.yin/motion_analysis_dfm.git
+cd motion_analysis_dfm
+
+# Web development
+cd deployment/gitlab-pages
+python -m http.server 8000
+
+# Desktop development
+cd motion_analyzer
 python main.py
 ```
 
-Use the provided example videos in `data/input/` to test functionality.
+### Deployment Process
+1. **Development**: Work in `feature/` branches
+2. **Integration**: Merge to `develop` for staging testing
+3. **Release**: Merge to `main` for production deployment
+4. **Cross-platform**: Changes sync to both GitLab and GitHub
 
-## Example Use Cases
+## 🏭 Installation & Usage
 
-1. **Manufacturing Training**: Analyze assembly line operations and create training materials
-2. **Quality Control**: Document standard procedures with visual and textual descriptions
-3. **Process Documentation**: Capture and codify manual processes
-4. **Training Content**: Create consistent training videos for new employees
+### Prerequisites
+- **Web**: Modern browser with HTML5 video support
+- **Desktop**: Python 3.8+, FFmpeg
 
-## Future Enhancements
+### Desktop Installation
+```bash
+cd motion_analyzer
+pip install -r requirements.txt
 
-- Machine learning-based motion classification
-- Multi-camera support
-- Real-time processing
-- Export to various formats
-- Integration with manufacturing systems
-- Automated quality assessment
+# Install FFmpeg
+# macOS: brew install ffmpeg
+# Windows: Download from https://ffmpeg.org/
+# Linux: sudo apt install ffmpeg
 
-## Support
+python main.py
+```
 
-For issues, questions, or contributions:
+### Desktop Application Features
+1. **Video Analysis Tab**: Upload and analyze factory floor videos
+2. **Video Assembly Tab**: Combine raw footage with generated code
+3. **Utilities Tab**: Video splitting, configuration, batch processing
 
-1. Check the troubleshooting section
-2. Review configuration options
-3. Examine example usage
-4. Create issues for bugs or feature requests
+### Web Application Features
+1. **Interactive Video Preview**: Built-in progress bar with seeking
+2. **Modal Training Player**: Immersive full-screen experience
+3. **Real-time Synchronization**: Action code highlighting with video
+4. **Responsive Design**: Works on desktop, tablet, and mobile
 
-## License
+## 🎯 Workflow Examples
 
-This project is provided as-is for educational and commercial use. Please ensure compliance with any relevant video processing and AI regulations in your jurisdiction.
+### 1. Web Application Workflow
+1. **Upload Video**: Drag & drop or browse for factory floor video
+2. **Preview**: Use progress bar to review content
+3. **Analyze**: Click "Analyze Video" to generate timestamped action code
+4. **Training Preview**: Click "Generate & Preview Training Video"
+5. **Experience**: Watch synchronized highlighting in modal player
+
+### 2. Desktop Application Workflow
+1. **Analysis**: Load video → Configure parameters → Analyze motion
+2. **Review**: Examine generated pseudocode and motion events
+3. **Assembly**: Combine raw video with action code → Create training video
+4. **Export**: Save training materials in various formats
+
+### 3. Example Use Cases
+- **Manufacturing Training**: Assembly line operation documentation
+- **Quality Control**: Standard procedure capture and codification
+- **Process Documentation**: Manual process analysis and training content
+- **Training Content**: Consistent materials for new employee onboarding
+
+## 📊 Technology Stack
+
+### Web Application
+- **Frontend**: Vanilla HTML5, CSS3, JavaScript (ES6+)
+- **Video**: HTML5 Video API with custom controls
+- **Styling**: Modern CSS with Flexbox/Grid
+- **Deployment**: GitLab CI/CD, GitHub Pages
+
+### Desktop Application
+- **Language**: Python 3.8+
+- **GUI Framework**: Tkinter with custom widgets (including progress bar)
+- **Video Processing**: OpenCV (cv2)
+- **Image Handling**: PIL (Pillow)
+
+### CI/CD Pipeline
+- **GitLab CI**: Automated testing and deployment
+- **Build Validation**: HTML/CSS/JS validation
+- **Multi-environment**: Production and staging deployments
+
+## 🔧 Configuration
+
+### Analysis Settings (Desktop)
+```json
+{
+  "motion_threshold": 0.01,
+  "min_contour_area": 500,
+  "frame_skip": 5,
+  "output_format": "json",
+  "enable_visualization": true
+}
+```
+
+### Assembly Settings (Desktop)
+```json
+{
+  "layout": "side_by_side",
+  "code_position": "right",
+  "code_width_ratio": 0.3,
+  "font_size": 14,
+  "font_color": "#00FF00",
+  "background_color": "#000000"
+}
+```
+
+## 🚀 Advanced Features
+
+### Web Application Highlights
+- **Progress Bar Integration**: Interactive video seeking with time display
+- **Modal Training Player**: Immersive side-by-side video + code experience
+- **Real-time Highlighting**: Active line tracking during video playback
+- **Responsive Design**: Seamless experience across devices
+- **No Backend Required**: Pure browser-based solution
+
+### Desktop Application Highlights
+- **Computer Vision**: OpenCV-based motion detection
+- **Configurable Analysis**: Adjustable parameters for different scenarios
+- **Batch Processing**: Process multiple videos programmatically
+- **Export Options**: Various output formats and quality settings
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** changes: `git commit -m 'Add amazing feature'`
+4. **Push** to branch: `git push origin feature/amazing-feature`
+5. **Submit** a Pull Request (GitHub) or Merge Request (GitLab)
+
+## 📊 Pipeline Status
+
+[![GitLab Pipeline](https://gitlab.com/chuck.yin/motion_analysis_dfm/badges/main/pipeline.svg)](https://gitlab.com/chuck.yin/motion_analysis_dfm/-/commits/main)
+
+## 🔗 Links
+
+- **GitLab Repository**: https://gitlab.com/chuck.yin/motion_analysis_dfm
+- **GitHub Mirror**: https://github.com/flying-pisces/motion_analysis
+- **GitLab Pages**: https://chuck.yin.gitlab.io/motion_analysis_dfm/
+- **GitHub Pages**: https://flying-pisces.github.io/motion_analysis/
+- **Documentation**: See `docs/` directory for detailed guides
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🎯 Future Enhancements
+
+- [ ] Machine learning-based motion classification
+- [ ] Multi-camera support and synchronization
+- [ ] Real-time processing capabilities
+- [ ] Progressive Web App (PWA) features
+- [ ] Integration with manufacturing systems
+- [ ] Automated quality assessment tools

@@ -32,31 +32,6 @@ class VideoPreviewWidget:
         self.canvas = tk.Canvas(self.frame, width=width, height=height, bg='black')
         self.canvas.pack()
 
-        # Create progress bar frame
-        self.progress_frame = ttk.Frame(self.frame)
-        self.progress_frame.pack(fill=tk.X, pady=(5, 0))
-
-        # Create progress bar
-        self.progress_var = tk.DoubleVar(value=0)
-        self.progress_bar = ttk.Scale(
-            self.progress_frame,
-            from_=0,
-            to=100,
-            orient=tk.HORIZONTAL,
-            variable=self.progress_var,
-            command=self.on_progress_change
-        )
-        self.progress_bar.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(5, 5))
-
-        # Time label for progress bar
-        self.progress_time_label = ttk.Label(self.progress_frame, text="0:00 / 0:00", font=('Arial', 9))
-        self.progress_time_label.pack(side=tk.RIGHT, padx=(0, 5))
-
-        # Flag to distinguish user drag from programmatic update
-        self.user_dragging = False
-        self.progress_bar.bind("<ButtonPress-1>", self.on_drag_start)
-        self.progress_bar.bind("<ButtonRelease-1>", self.on_drag_end)
-
         # Video state
         self.video_path = None
         self.cap = None
@@ -84,58 +59,6 @@ class VideoPreviewWidget:
                                text="Click 'Browse' to load a video",
                                fill="white", font=('Arial', 12))
 
-    def on_drag_start(self, event):
-        """Handle start of progress bar drag."""
-        self.user_dragging = True
-        # Pause video while dragging
-        if self.is_playing:
-            self.is_playing = False
-
-    def on_drag_end(self, event):
-        """Handle end of progress bar drag."""
-        self.user_dragging = False
-
-    def on_progress_change(self, value):
-        """Handle progress bar value change."""
-        if self.user_dragging and self.cap and self.total_frames > 0:
-            # Calculate target frame from percentage
-            percentage = float(value)
-            target_frame = int((percentage / 100.0) * self.total_frames)
-            target_frame = min(max(0, target_frame), self.total_frames - 1)
-
-            # Seek to the target frame
-            self.seek_to_frame(target_frame)
-
-    def seek_to_frame(self, frame_number):
-        """Seek to a specific frame in the video."""
-        if not self.cap:
-            return
-
-        self.current_frame = frame_number
-        self.show_frame(frame_number)
-
-        # Update start time for proper playback continuation
-        if self.is_playing:
-            self.start_time = time.time() - (self.current_frame / self.fps)
-
-    def format_time(self, seconds):
-        """Format time in MM:SS format."""
-        minutes = int(seconds // 60)
-        secs = int(seconds % 60)
-        return f"{minutes}:{secs:02d}"
-
-    def update_progress_display(self):
-        """Update progress bar and time label."""
-        if self.total_frames > 0 and not self.user_dragging:
-            # Update progress bar position
-            progress_percentage = (self.current_frame / self.total_frames) * 100
-            self.progress_var.set(progress_percentage)
-
-            # Update time label
-            current_time_str = self.format_time(self.current_time)
-            total_time_str = self.format_time(self.total_frames / self.fps if self.fps > 0 else 0)
-            self.progress_time_label.config(text=f"{current_time_str} / {total_time_str}")
-
     def load_video(self, video_path):
         """Load video file."""
         if self.cap:
@@ -151,10 +74,6 @@ class VideoPreviewWidget:
         self.total_frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         self.fps = self.cap.get(cv2.CAP_PROP_FPS)
         self.frame_delay = int(1000 / self.fps) if self.fps > 0 else 33
-
-        # Reset progress bar
-        self.progress_var.set(0)
-        self.update_progress_display()
 
         self.current_frame = 0
         self.show_frame(0)
@@ -188,12 +107,12 @@ class VideoPreviewWidget:
             self.current_frame = frame_number
             self.current_time = frame_number / self.fps if self.fps > 0 else 0
 
-            # Update progress bar display
-            self.update_progress_display()
-
             # Notify parent about time update
             if self.time_update_callback:
                 self.time_update_callback(self.current_time)
+
+            self.current_frame = frame_number
+            self.current_time = frame_number / self.fps if self.fps > 0 else 0
 
     def auto_play(self):
         """Start auto-play (loop)."""
@@ -369,7 +288,7 @@ class MotionAnalyzerGUI:
 
         # Instructions
         instructions = ttk.Label(preview_frame,
-                                text="Click video to play/pause • Drag progress bar to seek • Auto-loops",
+                                text="Click on video to play/pause • Auto-loops by default",
                                 font=('Arial', 9), foreground='gray')
         instructions.pack(pady=(5, 0))
 
