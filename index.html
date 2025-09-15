@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motion Analysis and Video Assembly Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Motion Analysis and Video Assembly Tool</h1>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Input Video Section -->
+                <div class="panel">
+                    <h2>Input Video</h2>
+                    <p>Select factory floor video:</p>
+                    <p class="formats-info">Supported formats: MP4, AVI, MOV, MKV, WMV, FLV</p>
+                    <div class="file-input-group">
+                        <input type="file" id="videoFile" accept="video/*" style="display: none;">
+                        <input type="text" id="videoPath" readonly placeholder="No file selected">
+                        <button onclick="document.getElementById('videoFile').click()">Browse</button>
+                    </div>
+                </div>
+
+                <!-- Video Preview Section -->
+                <div class="panel video-preview-panel">
+                    <h2>Video Preview</h2>
+                    <div class="video-container">
+                        <video id="videoPlayer" width="400" height="300">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="video-placeholder" id="videoPlaceholder">
+                            Click 'Browse' to load a video
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <input type="range" id="progressBar" min="0" max="100" value="0" step="0.1">
+                        <span id="timeDisplay">0:00 / 0:00</span>
+                    </div>
+
+                    <p class="instructions">Click video to play/pause • Drag progress bar to seek • Auto-loops</p>
+                </div>
+
+                <!-- Clock Section -->
+                <div class="clock-section">
+                    <span class="clock-label">Time:</span>
+                    <span id="clockDisplay" class="clock-time">0.0s</span>
+                </div>
+
+                <!-- Analysis Controls -->
+                <div class="panel">
+                    <h2>Analysis</h2>
+                    <button id="analyzeBtn" class="primary-btn" disabled>Analyze Video</button>
+                    <p id="analysisStatus" class="status-text">Select a video to analyze</p>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Analysis Results Section -->
+                <div class="panel results-panel">
+                    <h2>Analysis Results</h2>
+
+                    <!-- Video Information -->
+                    <div class="sub-panel" id="videoInfoPanel" style="display: none;">
+                        <h3>Video Information</h3>
+                        <div id="videoInfo" class="info-text"></div>
+                    </div>
+
+                    <!-- Action Code Results -->
+                    <div class="sub-panel">
+                        <h3>Generated Action Code with Timestamps</h3>
+                        <textarea id="resultsText" readonly rows="15"></textarea>
+                    </div>
+
+                    <!-- Results Controls -->
+                    <div class="button-group">
+                        <button onclick="saveActionCode()">Save Action Code</button>
+                        <button onclick="clearResults()">Clear Results</button>
+                    </div>
+                </div>
+
+                <!-- Assembly Section -->
+                <div class="panel">
+                    <h2>Video Assembly</h2>
+                    <p class="info-text">After analysis, click below to generate and preview the training video</p>
+                    <button id="assembleBtn" class="primary-btn" disabled>🎬 Generate & Preview Training Video</button>
+                    <p id="assemblyStatus" class="status-text">Complete analysis first</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilities Section (Below Main Content) -->
+        <div class="utilities-section">
+            <h2>Utilities</h2>
+
+            <div class="utilities-grid">
+                <!-- Split Training Video -->
+                <div class="panel">
+                    <h3>Split Training Video</h3>
+                    <p>Extract components from training video:</p>
+                    <p class="formats-info">Supported formats: MP4, AVI, MOV, MKV, WMV, FLV</p>
+                    <div class="file-input-group">
+                        <input type="file" id="splitVideoFile" accept="video/*" style="display: none;">
+                        <input type="text" id="splitVideoPath" readonly placeholder="No file selected">
+                        <button onclick="document.getElementById('splitVideoFile').click()">Browse</button>
+                    </div>
+                    <button onclick="splitTrainingVideo()">Split Video</button>
+                </div>
+
+                <!-- Training Video Player -->
+                <div class="panel">
+                    <h3>Training Video Player</h3>
+                    <p>Open existing training video with player:</p>
+                    <div class="file-input-group">
+                        <input type="file" id="playerVideoFile" accept="video/*" style="display: none;">
+                        <input type="text" id="playerVideoPath" readonly placeholder="No file selected">
+                        <button onclick="document.getElementById('playerVideoFile').click()">Browse</button>
+                    </div>
+                    <button onclick="openTrainingVideoPlayer()">Open in Player</button>
+                </div>
+
+                <!-- Configuration -->
+                <div class="panel">
+                    <h3>Configuration</h3>
+                    <div class="button-group">
+                        <button onclick="editAnalysisConfig()">Edit Analysis Settings</button>
+                        <button onclick="editAssemblyConfig()">Edit Assembly Settings</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="panel about-panel">
+                <h3>About</h3>
+                <div class="about-content">
+                    <h4>Motion Analysis Tool with Enhanced GUI v2.0</h4>
+                    <p><strong>Features:</strong></p>
+                    <ul>
+                        <li>Real-time video preview with play/pause control</li>
+                        <li>Sub-second accuracy clock display</li>
+                        <li>Integrated analysis and assembly workflow</li>
+                        <li>Timestamped action code generation</li>
+                        <li>Comprehensive video format support</li>
+                    </ul>
+                    <p>The tool analyzes factory floor videos to extract motion patterns and generate
+                    action code descriptions with precise timestamps. It can also assemble training
+                    videos by combining raw footage with generated code overlays.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <span id="statusMessage">Ready</span>
+        </footer>
+    </div>
+
+    <!-- Modal for Configuration -->
+    <div id="configModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeConfigModal()">&times;</span>
+            <h2 id="configTitle">Configuration</h2>
+            <textarea id="configContent" rows="20"></textarea>
+            <div class="button-group">
+                <button onclick="saveConfig()">Save</button>
+                <button onclick="closeConfigModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
