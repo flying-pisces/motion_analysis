@@ -1,0 +1,12 @@
+pages:
+  stage: deploy
+  script:
+    - mkdir -p public
+    - cp index.html public/
+    - cp -r motion_analyzer public/ || true
+    - cp -r deployment/gitlab-pages/* public/ || true
+  artifacts:
+    paths:
+      - public
+  only:
+    - gh-pages

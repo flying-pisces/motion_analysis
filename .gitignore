@@ -166,3 +166,7 @@ logs/
 # Analysis results (optional - you may want to track some)
 analysis_output/
 assembly_output/
+
+# Video files - exclude all mp4 except twitter_example.mp4
+motion_analyzer/data/input/*.mp4
+!motion_analyzer/data/input/twitter_example.mp4
