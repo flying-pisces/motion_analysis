@@ -1,0 +1,61 @@
+#!/bin/bash
+# Git Aliases for Clean Repository Management
+# Usage: source .gitaliases or add to your shell profile
+
+# GitHub push
+alias ghub='git push origin $(git branch --show-current)'
+
+# GitLab push
+alias glab='git push gitlab $(git branch --show-current)'
+
+# Sync all remotes
+alias gsync='git push origin $(git branch --show-current) && git push gitlab $(git branch --show-current)'
+
+# Clean commit with proper author
+gcommit() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: gcommit 'Your commit message'"
+        return 1
+    fi
+
+    git add . && git commit -m "$1"
+}
+
+# Clean commit and push to GitHub
+ghub-commit() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: ghub-commit 'Your commit message'"
+        return 1
+    fi
+
+    gcommit "$1" && ghub
+}
+
+# Clean commit and push to GitLab
+glab-commit() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: glab-commit 'Your commit message'"
+        return 1
+    fi
+
+    gcommit "$1" && glab
+}
+
+# Clean commit and sync to both remotes
+gsync-commit() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: gsync-commit 'Your commit message'"
+        return 1
+    fi
+
+    gcommit "$1" && gsync
+}
+
+echo "Git aliases loaded:"
+echo "  ghub          - Push to GitHub"
+echo "  glab          - Push to GitLab"
+echo "  gsync         - Push to both remotes"
+echo "  gcommit       - Clean commit"
+echo "  ghub-commit   - Commit and push to GitHub"
+echo "  glab-commit   - Commit and push to GitLab"
+echo "  gsync-commit  - Commit and push to both"
