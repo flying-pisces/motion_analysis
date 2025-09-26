@@ -2,39 +2,25 @@
 
 A comprehensive solution for analyzing factory floor videos and generating training materials with precise motion tracking and action code generation.
 
-## 🌐 Live Demos
+## 🌐 Live Demo
 
-| Platform | URL | Features |
-|----------|-----|----------|
-| **GitLab Pages** | https://chuck.yin.gitlab.io/motion_analysis_dfm/ | CI/CD deployment, staging environment |
-| **GitHub Pages** | https://flying-pisces.github.io/motion_analysis/ | Mirror deployment |
+**GitLab Pages**: https://halodi.gitlab.io/industrial-automation/1x_motion_analysis_dfm/
 
 ## 🏗 Project Architecture
 
-This repository serves **multiple deployment platforms** from a single codebase:
+This repository provides both web and desktop solutions for motion analysis:
 
 ### 📱 Platform Deployments
 
 - **Web Application**: Browser-based interface with video preview and modal training player
 - **Desktop Application**: Full-featured Python/Tkinter app with advanced processing
-- **Multi-Platform CI/CD**: Automated deployment to both GitLab and GitHub Pages
-
-### 🔄 Git Remotes
-
-```bash
-# GitLab (Primary development)
-gitlab    git@gitlab.com:chuck.yin/motion_analysis_dfm.git
-
-# GitHub (Public mirror)
-origin    git@github.com:flying-pisces/motion_analysis.git
-```
+- **GitLab CI/CD**: Automated deployment to GitLab Pages
 
 ## 🚀 Quick Start
 
 ### 🌐 Web Application (Recommended)
-Visit either deployment:
-- **GitLab**: https://chuck.yin.gitlab.io/motion_analysis_dfm/
-- **GitHub**: https://flying-pisces.github.io/motion_analysis/
+Visit the deployment:
+- **GitLab**: https://halodi.gitlab.io/industrial-automation/1x_motion_analysis_dfm/
 
 ### 💻 Desktop Application
 ```bash
@@ -71,17 +57,12 @@ python main.py
 ## 📁 Project Structure
 
 ```
-motion_analysis_dfm/
+1x_motion_analysis_dfm/
 ├── deployment/
-│   ├── github-pages/       # GitHub Pages deployment
-│   │   ├── index.html
-│   │   ├── styles.css
-│   │   └── script.js
 │   └── gitlab-pages/       # GitLab Pages deployment
 │       ├── index.html
 │       ├── styles.css
-│       ├── script.js
-│       └── README_GITLAB.md
+│       └── script.js
 ├── motion_analyzer/        # Desktop application
 │   ├── main.py            # Application entry point
 │   ├── src/               # Source code modules
@@ -109,16 +90,16 @@ motion_analysis_dfm/
 ## 🛠 Development Workflow
 
 ### Branch Strategy
-- **`main`**: Production releases (auto-deploys to both platforms)
+- **`main`**: Production releases
 - **`develop`**: Development branch (deploys to GitLab staging)
-- **`gh-pages`**: GitHub Pages deployment branch
+- **`gh-pages`**: GitLab Pages deployment branch
 - **`feature/*`**: Feature development branches
 
 ### Local Development
 ```bash
 # Clone repository
-git clone git@gitlab.com:chuck.yin/motion_analysis_dfm.git
-cd motion_analysis_dfm
+git clone git@gitlab.com:halodi/industrial-automation/1x_motion_analysis_dfm.git
+cd 1x_motion_analysis_dfm
 
 # Web development
 cd deployment/gitlab-pages
@@ -133,7 +114,7 @@ python main.py
 1. **Development**: Work in `feature/` branches
 2. **Integration**: Merge to `develop` for staging testing
 3. **Release**: Merge to `main` for production deployment
-4. **Cross-platform**: Changes sync to both GitLab and GitHub
+4. **GitLab Pages**: Automatic deployment via CI/CD pipeline
 
 ## 🏭 Installation & Usage
 
@@ -203,7 +184,7 @@ python main.py
 ### CI/CD Pipeline
 - **GitLab CI**: Automated testing and deployment
 - **Build Validation**: HTML/CSS/JS validation
-- **Multi-environment**: Production and staging deployments
+- **Environment**: Production and staging deployments
 
 ## 🔧 Configuration
 
@@ -251,18 +232,16 @@ python main.py
 2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
 3. **Commit** changes: `git commit -m 'Add amazing feature'`
 4. **Push** to branch: `git push origin feature/amazing-feature`
-5. **Submit** a Pull Request (GitHub) or Merge Request (GitLab)
+5. **Submit** a Merge Request (GitLab)
 
 ## 📊 Pipeline Status
 
-[![GitLab Pipeline](https://gitlab.com/chuck.yin/motion_analysis_dfm/badges/main/pipeline.svg)](https://gitlab.com/chuck.yin/motion_analysis_dfm/-/commits/main)
+[![GitLab Pipeline](https://gitlab.com/halodi/industrial-automation/1x_motion_analysis_dfm/badges/main/pipeline.svg)](https://gitlab.com/halodi/industrial-automation/1x_motion_analysis_dfm/-/commits/main)
 
 ## 🔗 Links
 
-- **GitLab Repository**: https://gitlab.com/chuck.yin/motion_analysis_dfm
-- **GitHub Mirror**: https://github.com/flying-pisces/motion_analysis
-- **GitLab Pages**: https://chuck.yin.gitlab.io/motion_analysis_dfm/
-- **GitHub Pages**: https://flying-pisces.github.io/motion_analysis/
+- **GitLab Repository**: https://gitlab.com/halodi/industrial-automation/1x_motion_analysis_dfm
+- **GitLab Pages**: https://halodi.gitlab.io/industrial-automation/1x_motion_analysis_dfm/
 - **Documentation**: See `docs/` directory for detailed guides
 
 ## 📄 License
